@@ -27,14 +27,17 @@ async def handler(event):
     if str(sender.id) not in accounts:
         for word in words:
             if word in event.raw_text.lower():
-                print('\033[92msend message\033[0m')
-                writeStream = open("./accounts.txt","w")
-                writeStream.write(f'{accounts}{sender.id};')
-                writeStream.close()
-                time.sleep(60)
-                replyStream = open("./reply.txt",encoding="utf-8")
-                replyMessages =replyStream.read().split(';')
-                for reply in replyMessages:
-                    await client.send_message(sender.id,reply)
-                    time.sleep(20)
+                try:
+                    print('\033[92msend message\033[0m')
+                    writeStream = open("./accounts.txt","w")
+                    writeStream.write(f'{accounts}{sender.id};')
+                    writeStream.close()
+                    time.sleep(60)
+                    replyStream = open("./reply.txt",encoding="utf-8")
+                    replyMessages =replyStream.read().split(';')
+                    for reply in replyMessages:
+                        await client.send_message(sender.id,reply)
+                        time.sleep(20)
+                except NameError:
+                    print(NameError.args)
 client.run_until_disconnected()
