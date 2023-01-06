@@ -14,7 +14,7 @@ async def send(accounts,sender,client):
         time.sleep(20)
 
 
-        
+
 settingStream = open ("./settings.txt")
 settings = settingStream.read().split(';')
 api_id = int(settings[0])
@@ -38,7 +38,6 @@ async def handler(event):
     readStream = open("./accounts.txt","r")
     accounts = readStream.read()
     readStream.close()
-    print(sender)
     if str(sender.id) not in accounts:
         for word in words:
             if word in event.raw_text.lower():
