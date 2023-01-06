@@ -6,12 +6,11 @@ async def send(accounts,sender,client):
     writeStream = open("./accounts.txt","w")
     writeStream.write(f'{accounts}{sender.id};')
     writeStream.close()
-    time.sleep(60)
     replyStream = open("./reply.txt",encoding="utf-8")
     replyMessages =replyStream.read().split(';')
     for reply in replyMessages:
+        time.sleep(60)
         await client.send_message(sender.id,reply)
-        time.sleep(20)
 
 
 
@@ -44,7 +43,6 @@ async def handler(event):
                 try:
                     await send(accounts,sender,client) 
                 except errors.PeerFloodError:
-                    time.sleep(60)
                     await send(accounts,sender,client)
 client.run_until_disconnected()
 
