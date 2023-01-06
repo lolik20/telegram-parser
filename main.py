@@ -1,6 +1,5 @@
 from telethon import TelegramClient, events, sync
 import time
-import socks
 
 settingStream = open ("./settings.txt")
 settings = settingStream.read().split(';')
