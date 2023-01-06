@@ -1,6 +1,20 @@
-from telethon import TelegramClient, events, sync
+from telethon import TelegramClient, events, sync,errors
 import time
 
+async def send(accounts,sender,client):
+    print('\033[92msend message\033[0m')
+    writeStream = open("./accounts.txt","w")
+    writeStream.write(f'{accounts}{sender.id};')
+    writeStream.close()
+    time.sleep(60)
+    replyStream = open("./reply.txt",encoding="utf-8")
+    replyMessages =replyStream.read().split(';')
+    for reply in replyMessages:
+        await client.send_message(sender.id,reply)
+        time.sleep(20)
+
+
+        
 settingStream = open ("./settings.txt")
 settings = settingStream.read().split(';')
 api_id = int(settings[0])
@@ -24,20 +38,14 @@ async def handler(event):
     readStream = open("./accounts.txt","r")
     accounts = readStream.read()
     readStream.close()
+    print(sender)
     if str(sender.id) not in accounts:
         for word in words:
             if word in event.raw_text.lower():
                 try:
-                    print('\033[92msend message\033[0m')
-                    writeStream = open("./accounts.txt","w")
-                    writeStream.write(f'{accounts}{sender.id};')
-                    writeStream.close()
+                    await send(accounts,sender,client) 
+                except errors.PeerFloodError:
                     time.sleep(60)
-                    replyStream = open("./reply.txt",encoding="utf-8")
-                    replyMessages =replyStream.read().split(';')
-                    for reply in replyMessages:
-                        await client.send_message(sender.id,reply)
-                        time.sleep(20)
-                except NameError:
-                    print(NameError.args)
+                    await send(accounts,sender,client)
 client.run_until_disconnected()
+
