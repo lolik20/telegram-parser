@@ -19,6 +19,7 @@ print('started!')
 
 @client.on(events.NewMessage(client.get_dialogs()))
 async def handler(event):
+    print(event.raw_text)
     sender = await event.get_sender()
     readStream = open("./accounts.txt","r")
     accounts = readStream.read()
