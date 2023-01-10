@@ -1,15 +1,20 @@
-from telethon import TelegramClient, events, sync,errors,types
+from telethon import TelegramClient, events, sync,errors,types,functions
 import time
 
 
-async def send(accounts,sender,client):
+async def send(accounts,sender,client,event):
     print('\033[92msend message\033[0m')
     writeStream = open("./accounts.txt","w")
     writeStream.write(f'{accounts}{sender.id};')
     writeStream.close()
     replyStream = open("./reply.txt",encoding="utf-8")
     replyMessages =replyStream.read().split(';')
+    entity = await client.get_entity(event.peer_id)
     for reply in replyMessages:
+        result = await client(functions.messages.SetTypingRequest(
+                peer=entity,
+                action=types.SendMessageTypingAction()
+                 ))
         time.sleep(60)
         await client.send_message(sender.id,reply)
 
@@ -45,9 +50,9 @@ async def handler(event):
         for word in words:
             if word in event.raw_text.lower():
                 try:
-                    await send(accounts,sender,client) 
+                    await send(accounts,sender,client,event) 
                 except errors.PeerFloodError:
-                    await send(accounts,sender,client)
+                    await send(accounts,sender,client,event)
     else:
         dialogStream= open("./dialog.txt",encoding = 'utf-8')
         dialog = dialogStream.read().split(';')
@@ -56,7 +61,11 @@ async def handler(event):
             entity = await client.get_entity(event.peer_id)
 
             if str(dialogKeyValue[0]) in event.raw_text.lower()and type(entity) is types.User:
-                time.sleep(60)
+                result = await client(functions.messages.SetTypingRequest(
+                peer=entity,
+                action=types.SendMessageTypingAction()
+                 ))
+                time(60)
                 await client.send_message(sender.id,dialogKeyValue[1])
                 print('\033[92msend dialog message\033[0m')
 client.run_until_disconnected()
