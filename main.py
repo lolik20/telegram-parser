@@ -1,6 +1,13 @@
 from telethon import TelegramClient, events, sync,errors,types,functions
 import time
 
+async def typing(client,entity):
+    for i in range(6):
+        result = await client(functions.messages.SetTypingRequest(
+                peer=entity,
+                action=types.SendMessageTypingAction()
+                 ))
+        time.sleep(5)
 
 async def send(accounts,sender,client,event):
     print('\033[92msend message\033[0m')
@@ -11,11 +18,7 @@ async def send(accounts,sender,client,event):
     replyMessages =replyStream.read().split(';')
     entity = await client.get_entity(event.peer_id)
     for reply in replyMessages:
-        result = await client(functions.messages.SetTypingRequest(
-                peer=entity,
-                action=types.SendMessageTypingAction()
-                 ))
-        time.sleep(60)
+        await typing(client,entity)
         await client.send_message(sender.id,reply)
 
 
@@ -61,11 +64,7 @@ async def handler(event):
             entity = await client.get_entity(event.peer_id)
 
             if str(dialogKeyValue[0]) in event.raw_text.lower()and type(entity) is types.User:
-                result = await client(functions.messages.SetTypingRequest(
-                peer=entity,
-                action=types.SendMessageTypingAction()
-                 ))
-                time(60)
+                await typing(client,entity)
                 await client.send_message(sender.id,dialogKeyValue[1])
                 print('\033[92msend dialog message\033[0m')
 client.run_until_disconnected()
