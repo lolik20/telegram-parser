@@ -1,5 +1,6 @@
-from telethon import TelegramClient, events, sync,errors
+from telethon import TelegramClient, events, sync,errors,types
 import time
+
 
 async def send(accounts,sender,client):
     print('\033[92msend message\033[0m')
@@ -11,7 +12,6 @@ async def send(accounts,sender,client):
     for reply in replyMessages:
         time.sleep(60)
         await client.send_message(sender.id,reply)
-
 
 
 settingStream = open ("./settings.txt")
@@ -29,6 +29,10 @@ words = wordsStream.read().split(';')
 wordsStream.close()
 client.start()
 print('started!')
+# dialogs = client.get_dialogs()
+# for dialog in dialogs:
+#     print(dialog.title)
+#     print(dialog.is_group)
 
 @client.on(events.NewMessage(client.get_dialogs()))
 async def handler(event):
@@ -44,5 +48,16 @@ async def handler(event):
                     await send(accounts,sender,client) 
                 except errors.PeerFloodError:
                     await send(accounts,sender,client)
+    else:
+        dialogStream= open("./dialog.txt",encoding = 'utf-8')
+        dialog = dialogStream.read().split(';')
+        for dialogWord in dialog:
+            dialogKeyValue = dialogWord.split('-')
+            entity = await client.get_entity(event.peer_id)
+
+            if str(dialogKeyValue[0]) in event.raw_text.lower()and type(entity) is types.User:
+                time.sleep(60)
+                await client.send_message(sender.id,dialogKeyValue[1])
+                print('\033[92msend dialog message\033[0m')
 client.run_until_disconnected()
 
