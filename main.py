@@ -2,7 +2,7 @@ from telethon import TelegramClient, events, sync,errors,types,functions
 import time
 
 async def typing(client,entity):
-    for i in range(6):
+    for i in range(12):
         result = await client(functions.messages.SetTypingRequest(
                 peer=entity,
                 action=types.SendMessageTypingAction()
@@ -26,6 +26,7 @@ settingStream = open ("./settings.txt")
 settings = settingStream.read().split(';')
 api_id = int(settings[0])
 api_hash = str(settings[1])
+
 # host = "217.29.63.202" # a valid host
 # port = 10745  # a valid port
 # proxy = (socks.SOCKS5, host, port)
@@ -61,9 +62,8 @@ async def handler(event):
         dialog = dialogStream.read().split(';')
         for dialogWord in dialog:
             dialogKeyValue = dialogWord.split('-')
-            entity = await client.get_entity(event.peer_id)
-
-            if str(dialogKeyValue[0]) in event.raw_text.lower()and type(entity) is types.User:
+            entity =await client.get_entity(event.peer_id)
+            if str(dialogKeyValue[0]) in event.raw_text.lower()and isinstance(entity,(types.User,types.PeerUser)):
                 await typing(client,entity)
                 await client.send_message(sender.id,dialogKeyValue[1])
                 print('\033[92msend dialog message\033[0m')
